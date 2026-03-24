@@ -46,7 +46,7 @@
 - **GitHub Actions release build** in `.github/workflows/android-ci.yml` assembles release with minification.
 - **Asset validation**: `verifyTexturesPowerOfTwo` task checks PNG/JPG dimensions for power-of-two before build.
 - **Compression target**: pipeline guidance is to publish KTX2 with ETC2/ASTC targets for mobile GPUs.
-- **Gradle binary compatibility fix**: keep `gradlew` scripts for local use, but CI uses installed Gradle (`gradle ...`) so the binary `gradle-wrapper.jar` is not required in-repo.
+- **Gradle binary compatibility fix**: keep `gradlew` scripts for local use, but CI installs Gradle 8.14.3 via GitHub Actions and runs `gradle ...`, so the binary `gradle-wrapper.jar` is not required in-repo.
 
 ## Engine Integration TODO
 
