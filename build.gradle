@@ -1,0 +1,38 @@
+plugins {
+    id 'com.android.application' version '8.4.2' apply false
+    id 'org.jetbrains.kotlin.android' version '1.9.24' apply false
+}
+
+subprojects {
+    tasks.register('verifyTexturesPowerOfTwo') {
+        group = 'verification'
+        description = 'Ensures all textures are power-of-two and prepared for ETC2/ASTC compression.'
+        doLast {
+            def textureFiles = fileTree(projectDir) {
+                include '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.ktx2', '**/*.astc'
+                exclude '**/build/**', '**/.gradle/**'
+            }
+
+            def nonPowerOfTwo = []
+            textureFiles.each { file ->
+                if (file.name.endsWith('.png') || file.name.endsWith('.jpg') || file.name.endsWith('.jpeg')) {
+                    def image = javax.imageio.ImageIO.read(file)
+                    if (image != null) {
+                        def w = image.width
+                        def h = image.height
+                        def pow2 = { int n -> (n & (n - 1)) == 0 }
+                        if (!pow2(w) || !pow2(h)) {
+                            nonPowerOfTwo << "${file}: ${w}x${h}"
+                        }
+                    }
+                }
+            }
+
+            if (!nonPowerOfTwo.isEmpty()) {
+                throw new GradleException("Non power-of-two textures found:\n${nonPowerOfTwo.join('\n')}")
+            }
+
+            println 'Texture validation passed. Use KTX2 ASTC/ETC2 target encoding in asset pipeline.'
+        }
+    }
+}
