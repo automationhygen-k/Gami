@@ -43,7 +43,7 @@
 ## 7) Performance & CI/CD
 
 - **R8/ProGuard minification** enabled in `app/build.gradle` release type.
-- **GitHub Actions final APK build** in `.github/workflows/android-ci.yml` validates textures, assembles a debug APK, and publishes a single installable artifact `Gami-final.apk`.
+- **GitHub Actions final APK build** in `.github/workflows/android-ci.yml` sets up Android SDK + Gradle, validates textures, assembles a debug APK, and publishes a single installable artifact `Gami-final.apk`.
 - **Asset validation**: `verifyTexturesPowerOfTwo` task checks PNG/JPG dimensions for power-of-two before build.
 - **Compression target**: pipeline guidance is to publish KTX2 with ETC2/ASTC targets for mobile GPUs.
 - **Gradle binary compatibility fix**: keep `gradlew` scripts for local use, but CI installs Gradle 8.14.3 via GitHub Actions and runs `gradle ...`, so the binary `gradle-wrapper.jar` is not required in-repo.
