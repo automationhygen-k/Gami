@@ -35,12 +35,19 @@ jobs:
 
       - name: Build one installable APK (single compile action)
         run: |
+          set -o pipefail
           gradle :app:assembleDebug --stacktrace --warning-mode all | tee build.log
 
       - name: Package final APK
         run: |
+          set -euo pipefail
           mkdir -p dist
-          cp app/build/outputs/apk/debug/app-debug.apk dist/Gami-final.apk
+          APK_PATH=$(find app/build/outputs/apk/debug -maxdepth 1 -type f -name "*.apk" | head -n 1)
+          if [ -z "${APK_PATH}" ]; then
+            echo "No APK found in app/build/outputs/apk/debug"
+            exit 1
+          fi
+          cp "${APK_PATH}" dist/Gami-final.apk
 
       - name: Upload final APK
         uses: actions/upload-artifact@v4
