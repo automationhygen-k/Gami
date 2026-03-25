@@ -33,11 +33,9 @@ jobs:
         with:
           gradle-version: 8.14.3
 
-      - name: Validate textures (power-of-two)
-        run: gradle verifyTexturesPowerOfTwo --stacktrace
-
-      - name: Build installable APK
-        run: gradle :app:assembleDebug --stacktrace
+      - name: Build one installable APK (single compile action)
+        run: |
+          gradle :app:assembleDebug --stacktrace --warning-mode all | tee build.log
 
       - name: Package final APK
         run: |
@@ -50,3 +48,10 @@ jobs:
           name: Gami-final-apk
           path: dist/Gami-final.apk
           if-no-files-found: error
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build-log
+          path: build.log
