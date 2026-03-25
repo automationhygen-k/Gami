@@ -4,12 +4,13 @@ on:
   push:
     branches: ["**"]
   pull_request:
+  workflow_dispatch:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  build:
+  build-final-apk:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,11 +31,17 @@ jobs:
       - name: Validate textures (power-of-two)
         run: gradle verifyTexturesPowerOfTwo --stacktrace
 
-      - name: Build release (R8 + minify)
-        run: gradle :app:assembleRelease --stacktrace
+      - name: Build installable APK
+        run: gradle :app:assembleDebug --stacktrace
 
-      - name: Upload release APK
+      - name: Package final APK
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/debug/app-debug.apk dist/Gami-final.apk
+
+      - name: Upload final APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: app/build/outputs/apk/release/*.apk
+          name: Gami-final-apk
+          path: dist/Gami-final.apk
+          if-no-files-found: error
