@@ -32,18 +32,17 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Generate Missing Gradle Wrapper
-        # This fixes the "Unable to access jarfile" error by creating the wrapper on the fly
-        # We use 8.10.2 as it is stable and compatible with AGP 8.4.2
+      - name: Fix Missing Wrapper
+        # This step creates the missing gradle-wrapper.jar that caused your last error.
         run: gradle wrapper --gradle-version 8.10.2
 
-      - name: Grant execute permission for gradlew
+      - name: Grant execute permission
         run: chmod +x gradlew
 
       - name: Build Debug APK
         run: |
           set -o pipefail
-          # We add the -P property here to fix the SDK 35 mismatch error automatically
+          # The -P line fixes the "compileSdk 35" crash we saw in your log
           ./gradlew :app:assembleDebug \
             -Pandroid.suppressUnsupportedCompileSdk=35 \
             --stacktrace \
