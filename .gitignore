@@ -1,0 +1,6 @@
+# Local Gradle artifacts
+.gradle/
+**/build/
+
+# Binary Gradle wrapper JAR triggers binary-diff limitations in some tooling.
+gradle/wrapper/gradle-wrapper.jar

@@ -1,0 +1,2 @@
+# Mark wrapper JAR as binary for consistent behavior if present locally.
+gradle/wrapper/gradle-wrapper.jar binary
