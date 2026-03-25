@@ -8,12 +8,16 @@ concurrency:
   group: android-ci-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # Keeps the environment modern
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build-final-apk:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -21,6 +25,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'gradle'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -31,10 +39,11 @@ jobs:
       - name: Build Debug APK
         run: |
           set -o pipefail
-          # Using ./gradlew ensures the correct Gradle version is used
+          # Using the wrapper (./gradlew) is safer than the global 'gradle' command
           ./gradlew :app:assembleDebug --stacktrace --warning-mode all | tee build.log
 
       - name: Package final APK
+        if: success()
         run: |
           mkdir -p dist
           APK_PATH=$(find app/build/outputs/apk/debug -maxdepth 1 -type f -name "*.apk" | head -n 1)
